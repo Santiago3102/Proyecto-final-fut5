@@ -74,9 +74,11 @@ public class Administrador extends JFrame {
             button.setFocusPainted(false);
             button.setBorderPainted(false);
             button.addMouseListener(new java.awt.event.MouseAdapter() {
+                @Override
                 public void mouseEntered(java.awt.event.MouseEvent evt) {
                     button.setBackground(new Color(41, 128, 185));
                 }
+                @Override
                 public void mouseExited(java.awt.event.MouseEvent evt) {
                     button.setBackground(primaryColor);
                 }

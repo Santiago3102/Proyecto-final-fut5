@@ -12,14 +12,15 @@ public class AgregarJugador extends JPanel {
     private BaseDeDatos baseDatos;
 
     private JTextField nombre;
+    private JTextField correo;
     private JComboBox<String> tipo;
     private JButton agregar;
 
     public AgregarJugador() {
         initComponents();
     }
-
-    public JugadorDatos getUsuarioInfo() {
+    
+     public JugadorDatos getUsuarioInfo() {
         return usuarioInfo;
     }
 
@@ -39,7 +40,7 @@ public class AgregarJugador extends JPanel {
         JPanel formPanel = new JPanel();
         formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
         formPanel.setBackground(new Color(180, 230, 250));  
-        formPanel.setBorder(BorderFactory.createEmptyBorder(60, 120, 60, 120));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(40, 120, 40, 120));
 
         JLabel nombreLabel = new JLabel("Nombre:");
         nombreLabel.setFont(new Font("Segoe UI", Font.PLAIN, 22));  
@@ -50,6 +51,16 @@ public class AgregarJugador extends JPanel {
         nombre.setBackground(new Color(250, 250, 250));  
         nombre.setMaximumSize(new Dimension(1000, 60));  
         nombre.setAlignmentX(CENTER_ALIGNMENT);
+
+        JLabel correoLabel = new JLabel("Correo Electrónico:");
+        correoLabel.setFont(new Font("Segoe UI", Font.PLAIN, 22)); 
+        correoLabel.setAlignmentX(CENTER_ALIGNMENT);
+
+        correo = new JTextField();
+        correo.setFont(new Font("Segoe UI", Font.PLAIN, 16)); 
+        correo.setBackground(new Color(250, 250, 250));  
+        correo.setMaximumSize(new Dimension(1000, 60));  
+        correo.setAlignmentX(CENTER_ALIGNMENT);
 
         JLabel tipoLabel = new JLabel("Tipo:");
         tipoLabel.setFont(new Font("Segoe UI", Font.PLAIN, 22)); 
@@ -70,15 +81,19 @@ public class AgregarJugador extends JPanel {
         agregar.setMaximumSize(new Dimension(1000, 70));  
         agregar.addActionListener(evt -> agregarActionPerformed());
 
-        formPanel.add(Box.createVerticalStrut(40));
+        formPanel.add(Box.createVerticalStrut(20));
         formPanel.add(nombreLabel);
-        formPanel.add(Box.createVerticalStrut(40));
+        formPanel.add(Box.createVerticalStrut(10));
         formPanel.add(nombre);
-        formPanel.add(Box.createVerticalStrut(60));
+        formPanel.add(Box.createVerticalStrut(20));
+        formPanel.add(correoLabel);
+        formPanel.add(Box.createVerticalStrut(10));
+        formPanel.add(correo);
+        formPanel.add(Box.createVerticalStrut(20));
         formPanel.add(tipoLabel);
-        formPanel.add(Box.createVerticalStrut(40));
+        formPanel.add(Box.createVerticalStrut(10));
         formPanel.add(tipo);
-        formPanel.add(Box.createVerticalStrut(80));
+        formPanel.add(Box.createVerticalStrut(40));
         formPanel.add(agregar);
 
         add(formPanel, BorderLayout.CENTER);
@@ -86,9 +101,12 @@ public class AgregarJugador extends JPanel {
 
     private void agregarActionPerformed() {
         String nombreJugador = nombre.getText();
+        String correoJugador = correo.getText();
 
         if (nombreJugador == null || nombreJugador.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Debe indicar el nombre del jugador");
+        } else if (correoJugador == null || correoJugador.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Debe indicar el correo electrónico");
         } else {
             String tipoSelected = (String) tipo.getSelectedItem();
             int tipoJugador = -1;
@@ -103,15 +121,12 @@ public class AgregarJugador extends JPanel {
                 JOptionPane.showMessageDialog(this, "Debe indicar una opción de tipo");
             } else {
                 JugadorModel modeloJugador = new JugadorModel(this.baseDatos);
-                boolean registrado = modeloJugador.RegistrarJugador(nombreJugador, tipoJugador);
+                boolean registrado = modeloJugador.RegistrarJugador(nombreJugador, tipoJugador, correoJugador);
 
                 JOptionPane.showMessageDialog(this, (registrado ? "Se" : "No se") + " ha registrado la información en el sistema");
                 nombre.setText("");
+                correo.setText("");
             }
         }
     }
 }
-
-
-
-

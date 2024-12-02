@@ -26,52 +26,53 @@ public class JugadorModel {
      * 
      * @param nombre
      * @param tipoSuscripcion
+     * @param correo
      * @return 
      */
-    public boolean RegistrarJugador(String nombre, int tipoSuscripcion) {
+   public boolean RegistrarJugador(String nombre, int tipoSuscripcion, String correo) {
+    
+    boolean registrado = false;
+    
+    try {
         
-        boolean registrado = false;
+        String query = "INSERT INTO CONFIGURACION_PERSONAS (`NOMBRE`, `TIPO_SUSCRIPCION`, `CORREO`) VALUES (?, ?, ?)";
+        Object[] parametros = { nombre, tipoSuscripcion, correo };
         
-        try {
+        int filasAfectadas = this.baseDatos.RealizarActualizacion(query, parametros);
+        
+        if (filasAfectadas > 0) {
             
-            String query = "INSERT INTO CONFIGURACION_PERSONAS (`NOMBRE`, `TIPO_SUSCRIPCION`) VALUES (?, ?)";
-            Object[] parametros = { nombre, tipoSuscripcion };
+            query = "SELECT * FROM CONFIGURACION_PERSONAS WHERE NOMBRE = ? ORDER BY ID DESC LIMIT 1";
+            Object[] parametros2 = { nombre };
             
-            int filasAfectadas = this.baseDatos.RealizarActualizacion(query, parametros);
-            
-            if (filasAfectadas > 0) {
+            ResultSet resultado = baseDatos.RealizarConsulta(query, parametros2);
+        
+            if (resultado != null && resultado.next()) {
                 
-                query = "SELECT * FROM CONFIGURACION_PERSONAS WHERE NOMBRE = ? ORDER BY ID DESC LIMIT 1";
-                Object[] parametros2 = { nombre };
+                query = "INSERT INTO ESTADISTICAS_PROMEDIO (`ID_PERSONA`, `PROMEDIO`) VALUES (?, ?)";
+                Object[] parametros3 = { resultado.getString("ID"), 5 };
                 
-                ResultSet resultado = baseDatos.RealizarConsulta(query, parametros2);
-            
-                if (resultado != null && resultado.next()) {
-                    
-                    query = "INSERT INTO ESTADISTICAS_PROMEDIO (`ID_PERSONA`, `PROMEDIO`) VALUES (?, ?)";
-                    Object[] parametros3 = { resultado.getString("ID"), 5 };
-                    
-                    this.baseDatos.RealizarActualizacion(query, parametros3);
-                    
-                    query = "INSERT INTO SEGURIDAD_LOGIN (`USUARIO`, `CLAVE`, `TIPO`, `PERSONA_ASOCIADA`) VALUES (?, ?, ?, ?)";
-                    Object[] parametros4 = { nombre, nombre, 1, resultado.getString("ID") };
-                    
-                    this.baseDatos.RealizarActualizacion(query, parametros4);
-                    
-                    registrado = true;
-                    
-                    JOptionPane.showMessageDialog(null, "Se ha registrado al jugador, id asignado = " + resultado.getString("ID"));
-                }
+                this.baseDatos.RealizarActualizacion(query, parametros3);
                 
+                query = "INSERT INTO SEGURIDAD_LOGIN (`USUARIO`, `CLAVE`, `TIPO`, `PERSONA_ASOCIADA`) VALUES (?, ?, ?, ?)";
+                Object[] parametros4 = { nombre, nombre, 1, resultado.getString("ID") };
+                
+                this.baseDatos.RealizarActualizacion(query, parametros4);
+                
+                registrado = true;
+                
+                JOptionPane.showMessageDialog(null, "Se ha registrado al jugador, id asignado = " + resultado.getString("ID"));
             }
             
-        } 
-        catch (SQLException e) {
-            System.out.println("Error al registrar al jugador, error => " + e.getMessage());
         }
         
-        return registrado;
+    } 
+    catch (SQLException e) {
+        System.out.println("Error al registrar al jugador, error => " + e.getMessage());
     }
+    
+    return registrado;
+}
     
     /**
      * esta funcion se encarga de realizar la consulta de la informacion de la persona 
